@@ -125,6 +125,7 @@ export function CritiqueChat() {
     }]);
 
     try {
+      console.log('🔵 STARTING API CALL');
       // Call streaming API
       const response = await fetch('/api/critique', {
         method: 'POST',
@@ -138,40 +139,44 @@ export function CritiqueChat() {
           critic,
         }),
       });
+      console.log('🟢 GOT RESPONSE:', response.status, response.ok);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      // Handle streaming response - plain text stream from toTextStreamResponse()
-      const reader = response.body?.getReader();
+      // Handle streaming response - Server-Sent Events format
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedText = '';
-      let hasReceivedFirstChunk = false;
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      while (true) {
+        const { done, value } = await reader.read();
 
-          const chunk = decoder.decode(value);
-          accumulatedText += chunk;
+        if (done) break;
 
-          // Hide loading indicator once first chunk arrives
-          if (!hasReceivedFirstChunk && accumulatedText.trim().length > 0) {
-            hasReceivedFirstChunk = true;
-            setIsLoading(false);
-          }
+        // Decode the chunk and add to accumulated text
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedText += chunk;
 
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === assistantId
-                ? { ...msg, content: accumulatedText }
-                : msg
-            )
-          );
-        }
+        console.log('TEXT CHUNK:', chunk);
+
+        // Update UI with accumulated text
+        setIsLoading(false);
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === assistantId
+              ? { ...msg, content: accumulatedText }
+              : msg
+          )
+        );
       }
+
+      console.log('FINAL ACCUMULATED TEXT:', accumulatedText);
     } catch (error) {
       console.error('Error getting critique:', error);
       setMessages(prev =>
@@ -246,8 +251,27 @@ export function CritiqueChat() {
                     <span className="text-sm text-[#9A8C98]">Thinking...</span>
                   </div>
                 ) : (
-                  <div className="prose prose-sm max-w-none prose-invert prose-headings:text-[#F2E9E4] prose-p:text-[#F2E9E4] prose-strong:text-[#C9ADA7] prose-em:text-[#9A8C98] prose-ul:text-[#F2E9E4] prose-ol:text-[#F2E9E4] prose-li:text-[#F2E9E4] prose-code:text-[#C9ADA7] prose-code:bg-[#1a1a2e] prose-pre:bg-[#1a1a2e] prose-blockquote:text-[#9A8C98] prose-blockquote:border-[#4A4E69]">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div className="prose prose-sm max-w-none prose-invert prose-headings:text-[#F2E9E4] prose-p:text-[#F2E9E4] prose-strong:text-[#C9ADA7] prose-em:text-[#9A8C98] prose-ul:text-[#F2E9E4] prose-ol:text-[#F2E9E4] prose-li:text-[#F2E9E4] prose-code:text-[#C9ADA7] prose-code:bg-[#1a1a2e] prose-pre:bg-[#1a1a2e] prose-blockquote:text-[#9A8C98] prose-blockquote:border-[#4A4E69] prose-a:text-[#C9ADA7] prose-a:underline hover:prose-a:text-[#F2E9E4] prose-img:rounded-lg prose-img:border prose-img:border-[#4A4E69]">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        img: ({ node, ...props }) => (
+                          <img
+                            {...props}
+                            className="rounded-lg border border-[#4A4E69] max-w-full h-auto my-2"
+                            loading="lazy"
+                          />
+                        ),
+                        a: ({ node, ...props }) => (
+                          <a
+                            {...props}
+                            className="text-[#C9ADA7] underline hover:text-[#F2E9E4] transition-colors"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          />
+                        )
+                      }}
+                    >
                       {message.content}
                     </ReactMarkdown>
                   </div>
