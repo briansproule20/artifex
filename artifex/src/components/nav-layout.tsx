@@ -16,8 +16,8 @@ import { Button } from '@/components/ui/button';
 
 const navItems = [
   { name: 'Home', href: '/', icon: Home },
-  { name: 'Studio', href: '/studio', icon: Palette },
   { name: 'Critique', href: '/critique', icon: MessageSquare },
+  { name: 'Studio', href: '/studio', icon: Palette },
 ];
 
 export function NavLayout({ children }: { children: React.ReactNode }) {
