@@ -28,6 +28,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Loader2, User } from 'lucide-react';
 import { criticPersonalities, type CriticPersonality } from '@/lib/critic-personalities';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -244,9 +246,11 @@ export function CritiqueChat() {
                     <span className="text-sm text-[#9A8C98]">Thinking...</span>
                   </div>
                 ) : (
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {message.content}
-                  </p>
+                  <div className="prose prose-sm max-w-none prose-invert prose-headings:text-[#F2E9E4] prose-p:text-[#F2E9E4] prose-strong:text-[#C9ADA7] prose-em:text-[#9A8C98] prose-ul:text-[#F2E9E4] prose-ol:text-[#F2E9E4] prose-li:text-[#F2E9E4] prose-code:text-[#C9ADA7] prose-code:bg-[#1a1a2e] prose-pre:bg-[#1a1a2e] prose-blockquote:text-[#9A8C98] prose-blockquote:border-[#4A4E69]">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
                 )}
               </div>
 
