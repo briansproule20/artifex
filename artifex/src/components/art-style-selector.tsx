@@ -1,7 +1,6 @@
 'use client';
 
 import { artStyles, type ArtStyle } from '@/lib/art-styles';
-import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,

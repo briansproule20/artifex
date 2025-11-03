@@ -14,6 +14,21 @@ interface CritiqueRequest {
   critic: CriticPersonality;
 }
 
+interface ArtworkApiResponse {
+  id: number;
+  title: string;
+  artist_display: string;
+  date_display: string;
+  medium_display: string;
+  image_id: string | null;
+  dimensions?: string;
+  place_of_origin?: string;
+  description?: string;
+  style_title?: string;
+  classification_title?: string;
+  artwork_type_title?: string;
+}
+
 /**
  * Search for artworks using the Art Institute of Chicago API
  * Free, public API with high-quality images and metadata
@@ -30,7 +45,7 @@ async function searchArtworks(query: string, limit: number = 5) {
 
     const data = await response.json();
 
-    return data.data.map((artwork: any) => ({
+    return data.data.map((artwork: ArtworkApiResponse) => ({
       id: artwork.id,
       title: artwork.title,
       artist: artwork.artist_display,

@@ -22,7 +22,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Loader2, User } from 'lucide-react';
@@ -255,14 +254,15 @@ export function CritiqueChat() {
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
-                        img: ({ node, ...props }) => (
+                        img: ({ ...props }) => (
                           <img
                             {...props}
+                            alt={props.alt || 'Artwork'}
                             className="rounded-lg border border-[#4A4E69] max-w-full h-auto my-2"
                             loading="lazy"
                           />
                         ),
-                        a: ({ node, ...props }) => (
+                        a: ({ ...props }) => (
                           <a
                             {...props}
                             className="text-[#C9ADA7] underline hover:text-[#F2E9E4] transition-colors"
