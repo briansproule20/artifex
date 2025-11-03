@@ -69,7 +69,6 @@ export async function POST(request: Request) {
       model: openai('gpt-4o'),
       system: criticConfig.systemPrompt,
       messages: conversationMessages,
-      maxTokens: 1000,
       temperature: 0.8,
     });
 

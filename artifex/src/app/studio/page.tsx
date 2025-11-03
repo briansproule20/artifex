@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ImageGenerator from '@/components/image-generator';
 import { NavLayout } from '@/components/nav-layout';
@@ -10,7 +10,7 @@ import { Info } from 'lucide-react';
  * Studio Mode - Image Generation Page
  * Transforms chat discussions into visual artwork
  */
-export default function StudioPage() {
+function StudioContent() {
   const searchParams = useSearchParams();
   const [critiqueContext, setCritiqueContext] = useState<string | null>(null);
 
@@ -70,5 +70,23 @@ export default function StudioPage() {
         </div>
       </div>
     </NavLayout>
+  );
+}
+
+export default function StudioPage() {
+  return (
+    <Suspense fallback={
+      <NavLayout>
+        <div className="flex flex-col h-full bg-[#22223B]">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-[#9A8C98]">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </NavLayout>
+    }>
+      <StudioContent />
+    </Suspense>
   );
 }

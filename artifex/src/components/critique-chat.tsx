@@ -272,7 +272,6 @@ export function CritiqueChat() {
             onSubmit={handleSubmit}
             globalDrop
             accept="image/*"
-            disabled={isLoading}
             className="bg-[#2a2a45] border-[#4A4E69]"
           >
             <FileInputManager />
