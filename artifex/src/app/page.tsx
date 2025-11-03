@@ -22,8 +22,7 @@ export default function Home() {
             </h1>
 
             <p className="text-xl sm:text-2xl text-[#9A8C98] max-w-2xl mx-auto leading-relaxed">
-              An interactive AI art critic and co-creator. Chat about art, get critique,
-              and generate new artwork from your discussions.
+              Discuss art with expert critics, explore museum collections, then create your own masterpieces in dozens of styles.
             </p>
 
             <div className="flex items-center justify-center gap-4 pt-4">
