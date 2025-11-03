@@ -35,7 +35,7 @@ const LoadingTimer = React.memo(function LoadingTimer({
 
   const elapsed = (Date.now() - startTime.getTime()) / 1000;
   return (
-    <div className="text-xs text-gray-500 font-mono">{elapsed.toFixed(1)}s</div>
+    <div className="text-xs text-[#9A8C98] font-mono">{elapsed.toFixed(1)}s</div>
   );
 });
 
@@ -84,17 +84,17 @@ const ImageHistoryItem = React.memo(function ImageHistoryItem({
       role="button"
       tabIndex={0}
       aria-label={`Open details for image: ${image.prompt.slice(0, 50)}${image.prompt.length > 50 ? '...' : ''}`}
-      className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 group cursor-pointer hover:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all animate-in fade-in slide-in-from-left-4 duration-500"
+      className="relative aspect-square bg-[#1a1a2e] rounded-lg overflow-hidden border border-[#4A4E69] group cursor-pointer hover:shadow-lg hover:border-[#C9ADA7] focus:ring-2 focus:ring-[#C9ADA7] focus:ring-offset-2 focus:ring-offset-[#22223B] transition-all animate-in fade-in slide-in-from-left-4 duration-500"
     >
       {image.isLoading ? (
         <div className="flex flex-col items-center justify-center h-full space-y-2 p-4">
-          <Skeleton className="h-16 w-16 rounded-lg" />
+          <Skeleton className="h-16 w-16 rounded-lg bg-[#4A4E69]" />
           <LoadingTimer startTime={image.timestamp} />
         </div>
       ) : image.error ? (
         <div className="flex flex-col items-center justify-center h-full space-y-2 p-4">
-          <div className="text-red-500 text-sm">⚠️ Failed</div>
-          <div className="text-xs text-gray-500 text-center">{image.error}</div>
+          <div className="text-red-400 text-sm">⚠️ Failed</div>
+          <div className="text-xs text-[#9A8C98] text-center">{image.error}</div>
         </div>
       ) : image.imageUrl ? (
         <>
@@ -114,7 +114,7 @@ const ImageHistoryItem = React.memo(function ImageHistoryItem({
               }}
               aria-label="Copy image to clipboard"
               title="Copy image"
-              className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg text-gray-700 hover:text-gray-900 cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-150 focus:ring-2 focus:ring-blue-500"
+              className="h-8 w-8 p-0 bg-[#2a2a45]/90 hover:bg-[#4A4E69] border border-[#4A4E69] shadow-lg text-[#F2E9E4] hover:text-[#C9ADA7] cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-150 focus:ring-2 focus:ring-[#C9ADA7]"
               disabled={!isImageActionable(image)}
             >
               <Copy size={14} />
@@ -127,7 +127,7 @@ const ImageHistoryItem = React.memo(function ImageHistoryItem({
               }}
               aria-label="Download image"
               title="Download image"
-              className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg text-gray-700 hover:text-gray-900 cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-150 focus:ring-2 focus:ring-blue-500"
+              className="h-8 w-8 p-0 bg-[#2a2a45]/90 hover:bg-[#4A4E69] border border-[#4A4E69] shadow-lg text-[#F2E9E4] hover:text-[#C9ADA7] cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-150 focus:ring-2 focus:ring-[#C9ADA7]"
               disabled={!isImageActionable(image)}
             >
               <Download size={14} />
@@ -140,7 +140,7 @@ const ImageHistoryItem = React.memo(function ImageHistoryItem({
               }}
               aria-label="Edit this image"
               title="Edit image"
-              className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-lg text-gray-700 hover:text-gray-900 cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-150 focus:ring-2 focus:ring-blue-500"
+              className="h-8 w-8 p-0 bg-[#2a2a45]/90 hover:bg-[#4A4E69] border border-[#4A4E69] shadow-lg text-[#F2E9E4] hover:text-[#C9ADA7] cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-150 focus:ring-2 focus:ring-[#C9ADA7]"
               disabled={!isImageActionable(image)}
             >
               <Edit size={14} />
@@ -148,7 +148,7 @@ const ImageHistoryItem = React.memo(function ImageHistoryItem({
           </div>
         </>
       ) : (
-        <div className="flex items-center justify-center h-full text-gray-400">
+        <div className="flex items-center justify-center h-full text-[#9A8C98]">
           No image
         </div>
       )}
@@ -182,8 +182,8 @@ export const ImageHistory = React.memo(function ImageHistory({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Generated Images</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 transition-all duration-300 ease-out">
+      <h3 className="text-lg font-semibold text-[#F2E9E4]">Generated Images</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 transition-all duration-300 ease-out">
         {imageHistory.map(image => (
           <ImageHistoryItem
             key={image.id}

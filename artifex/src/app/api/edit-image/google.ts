@@ -43,8 +43,8 @@ export async function handleGoogleEdit(
 
     if (!imageFile) {
       return Response.json(
-        { error: ERROR_MESSAGES.NO_EDITED_IMAGE },
-        { status: 500 }
+        { error: 'Image editing with Gemini is not currently supported. Gemini can analyze images but does not generate edited images. Please use OpenAI for image generation instead.' },
+        { status: 400 }
       );
     }
 

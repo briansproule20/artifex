@@ -35,6 +35,9 @@ import type {
   ModelOption,
 } from '@/lib/types';
 import { ImageHistory } from './image-history';
+import { ArtStyleSelector } from './art-style-selector';
+import type { ArtStyle } from '@/lib/art-styles';
+import { saveImage, getAllImages } from '@/lib/image-db';
 
 declare global {
   interface Window {
@@ -100,11 +103,22 @@ async function editImage(request: EditImageRequest): Promise<ImageResponse> {
  * - Supports both text-to-image generation and image editing
  * - Maintains history of all generated/edited images
  * - Provides seamless model switching between OpenAI and Gemini
+ * - Can accept contextPrompt from critique chat for contextual generation
  */
-export default function ImageGenerator() {
+export default function ImageGenerator({ contextPrompt }: { contextPrompt?: string | null }) {
   const [model, setModel] = useState<ModelOption>('gemini');
   const [imageHistory, setImageHistory] = useState<GeneratedImage[]>([]);
   const promptInputRef = useRef<HTMLFormElement>(null);
+  const [selectedStyle, setSelectedStyle] = useState<ArtStyle | null>(null);
+
+  // Load images from IndexedDB on mount
+  useEffect(() => {
+    getAllImages().then(images => {
+      setImageHistory(images);
+    }).catch(error => {
+      console.error('Failed to load images from IndexedDB:', error);
+    });
+  }, []);
 
   // Handle adding files to the input from external triggers (like from image history)
   const handleAddToInput = useCallback((files: File[]) => {
@@ -157,7 +171,17 @@ export default function ImageGenerator() {
       }
 
       const isEdit = hasAttachments;
-      const prompt = message.text?.trim() || '';
+      let prompt = message.text?.trim() || '';
+
+      // Enhance prompt with context if available
+      if (contextPrompt && prompt) {
+        prompt = `Context from discussion:\n${contextPrompt}\n\nUser request: ${prompt}`;
+      }
+
+      // Enhance prompt with selected art style
+      if (selectedStyle && prompt) {
+        prompt = `${prompt} ${selectedStyle.prompt}`;
+      }
 
       // Generate unique ID for this request
       const imageId = `img_${Date.now()}`;
@@ -244,11 +268,19 @@ export default function ImageGenerator() {
         }
 
         // Update the existing placeholder entry with the result
+        const updatedImage = { ...placeholderImage, imageUrl, isLoading: false };
         setImageHistory(prev =>
           prev.map(img =>
-            img.id === imageId ? { ...img, imageUrl, isLoading: false } : img
+            img.id === imageId ? updatedImage : img
           )
         );
+
+        // Save to IndexedDB
+        try {
+          await saveImage(updatedImage);
+        } catch (dbError) {
+          console.error('Failed to save image to IndexedDB:', dbError);
+        }
       } catch (error) {
         console.error(
           `Error ${isEdit ? 'editing' : 'generating'} image:`,
@@ -272,31 +304,40 @@ export default function ImageGenerator() {
         );
       }
     },
-    [model]
+    [model, contextPrompt, selectedStyle]
   );
 
   return (
     <div className="space-y-6">
+      {/* Art Style Selector */}
+      <ArtStyleSelector
+        onStyleSelect={(style) => setSelectedStyle(style)}
+        selectedStyleId={selectedStyle?.id}
+      />
+
       <PromptInput
         ref={promptInputRef}
         onSubmit={handleSubmit}
-        className="relative"
+        className="bg-[#2a2a45] border-[#4A4E69]"
         globalDrop
         multiple
         accept="image/*"
       >
         <FileInputManager />
-        <PromptInputBody>
+        <PromptInputBody className="bg-[#2a2a45]">
           <PromptInputAttachments>
             {attachment => <PromptInputAttachment data={attachment} />}
           </PromptInputAttachments>
-          <PromptInputTextarea placeholder="Describe the image you want to generate, or attach an image and describe how to edit it..." />
+          <PromptInputTextarea
+            placeholder="Describe the image you want to generate, or attach an image and describe how to edit it..."
+            className="bg-[#2a2a45] text-[#F2E9E4] placeholder:text-[#9A8C98] border-[#4A4E69] min-h-[80px]"
+          />
         </PromptInputBody>
-        <PromptInputToolbar>
-          <PromptInputTools>
+        <PromptInputToolbar className="bg-[#2a2a45] border-[#4A4E69]">
+          <PromptInputTools className="flex items-center gap-2">
             <PromptInputActionMenu>
-              <PromptInputActionMenuTrigger />
-              <PromptInputActionMenuContent>
+              <PromptInputActionMenuTrigger className="text-[#C9ADA7] hover:text-[#F2E9E4]" />
+              <PromptInputActionMenuContent className="bg-[#2a2a45] border-[#4A4E69]">
                 <PromptInputActionAddAttachments />
               </PromptInputActionMenuContent>
             </PromptInputActionMenu>
@@ -306,12 +347,12 @@ export default function ImageGenerator() {
               }}
               value={model}
             >
-              <PromptInputModelSelectTrigger>
+              <PromptInputModelSelectTrigger className="w-[140px] sm:w-[180px] h-8 border-[#4A4E69] bg-[#1a1a2e] text-[#F2E9E4] text-xs">
                 <PromptInputModelSelectValue />
               </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
+              <PromptInputModelSelectContent className="bg-[#2a2a45] border-[#4A4E69]">
                 {models.map(model => (
-                  <PromptInputModelSelectItem key={model.id} value={model.id}>
+                  <PromptInputModelSelectItem key={model.id} value={model.id} className="text-[#F2E9E4] hover:bg-[#4A4E69] text-sm">
                     {model.name}
                   </PromptInputModelSelectItem>
                 ))}
@@ -324,11 +365,11 @@ export default function ImageGenerator() {
               variant="ghost"
               size="sm"
               onClick={clearForm}
-              className="h-9 w-9 p-0"
+              className="h-9 w-9 p-0 text-[#9A8C98] hover:text-[#F2E9E4] hover:bg-[#4A4E69]"
             >
               <X size={16} />
             </Button>
-            <PromptInputSubmit />
+            <PromptInputSubmit className="bg-[#C9ADA7] text-[#22223B] hover:bg-[#9A8C98]" />
           </div>
         </PromptInputToolbar>
       </PromptInput>

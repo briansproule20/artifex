@@ -1,69 +1,114 @@
-/**
- * Next.js Image Generation Template with Echo SDK
- *
- * This template demonstrates how to build an AI image generation app using:
- * - Echo SDK for authentication and token management
- * - AI SDK for OpenAI and Gemini image generation
- * - Next.js App Router for server-side rendering
- *
- * Key features:
- * 1. Authentication: Automatic login/logout with Echo SDK
- * 2. Image Generation: Support for both OpenAI and Gemini models
- * 3. Image Editing: Upload images and edit with AI prompts
- * 4. History: Persistent image gallery with download/copy actions
- * 5. Responsive Design: Works on desktop and mobile
- *
- * Usage Examples:
- * - Text-to-Image: "A beautiful sunset over mountains"
- * - Image Editing: Upload photo + "Make this black and white"
- * - Model Switching: Choose between GPT Image or Gemini Flash
- */
-
-import { isSignedIn } from '@/echo';
-import ImageGenerator from '@/components/image-generator';
-import { EchoWidget } from '@/components/echo-tokens';
-
-import { EchoSignIn } from '@merit-systems/echo-next-sdk/client';
-import { EchoAccount } from '@/components/echo-account-next';
+import { NavLayout } from '@/components/nav-layout';
+import { Palette, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 /**
- * Main application page
- *
- * Server component that checks authentication status and renders
- * either the sign-in page or the main image generation interface
+ * Home page - Introduction to Artifex
  */
-export default async function Home() {
-  // Check authentication status using Echo SDK
-  const _isSignedIn = await isSignedIn();
-
-  // Main application interface
+export default function Home() {
   return (
-    <div className="flex flex-col h-screen p-2 sm:p-4 max-w-6xl mx-auto">
-      {/* Header with title and token display */}
-      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full mb-4 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-slate-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm gap-3 sm:gap-0">
-        <div className="flex items-center space-x-3">
-          <h1 className="text-2xl sm:text-3xl font-mono bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            Echo Image Gen
-          </h1>
-        </div>
-        <div className="flex items-center gap-3">
-          {/* Echo token display widget */}
-          {/* {_isSignedIn && <EchoWidget />} */}
-          <EchoAccount />
-        </div>
-      </header>
+    <NavLayout>
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 sm:p-12 bg-[#22223B]">
+        <div className="max-w-4xl w-full space-y-12">
+          {/* Hero Section */}
+          <div className="text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4A4E69] text-[#C9ADA7] text-sm font-medium border border-[#C9ADA7]/20">
+              AI Art Critic & Co-Creator
+            </div>
 
-      {/* Main image generation interface */}
-      <div className="relative">
-        <ImageGenerator />
+            <h1 className="text-5xl sm:text-7xl font-bold text-[#F2E9E4]">
+              Artifex
+            </h1>
 
-        {/* Overlay when not signed in */}
-        {!_isSignedIn && (
-          <div className="absolute inset-0 backdrop-blur-[2px] bg-white/30 flex items-center justify-center rounded-xl border border-gray-300">
-            <EchoSignIn />
+            <p className="text-xl sm:text-2xl text-[#9A8C98] max-w-2xl mx-auto leading-relaxed">
+              An interactive AI art critic and co-creator. Chat about art, get critique,
+              and generate new artwork from your discussions.
+            </p>
+
+            <div className="flex items-center justify-center gap-4 pt-4">
+              <Link href="/critique">
+                <Button size="lg" className="gap-2 bg-[#C9ADA7] hover:bg-[#9A8C98] text-[#22223B] font-semibold">
+                  <MessageSquare size={20} />
+                  Start Critique
+                </Button>
+              </Link>
+              <Link href="/studio">
+                <Button size="lg" variant="outline" className="gap-2 border-[#4A4E69] text-[#C9ADA7] hover:bg-[#4A4E69] hover:text-[#F2E9E4]">
+                  <Palette size={20} />
+                  Open Studio
+                </Button>
+              </Link>
+            </div>
           </div>
-        )}
+
+          {/* Meet Our Critics Section */}
+          <div className="space-y-6 pt-8">
+            <h2 className="text-3xl font-bold text-center text-[#F2E9E4]">
+              Meet Our Critics
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  name: 'The Gallerist',
+                  emoji: '🎨',
+                  intro: "I am The Gallerist, a sophisticated and cultured art critic with years of experience in the gallery world. I offer refined, encouraging, and precise insights into art, helping artists understand how their work might be received in professional spaces."
+                },
+                {
+                  name: 'The Academic',
+                  emoji: '📚',
+                  intro: "I am The Academic, an art historian and critic. I focus on art theory, historical context, and critical analysis. My approach is scholarly, referencing art movements, theoretical frameworks, and historical precedents to provide thorough critiques."
+                },
+                {
+                  name: 'The Snob',
+                  emoji: '🎭',
+                  intro: "Ah, I see you need clarification. I am The Snob, the art critic with an impossibly discerning eye and a penchant for the cutting remark. I'm here to offer my sharp, witty critiques of the art world, where mediocrity is swiftly dispatched and true genius is reluctantly acknowledged."
+                },
+                {
+                  name: 'The Friend',
+                  emoji: '💚',
+                  intro: "I'm The Friend, your supportive and enthusiastic art buddy! I'm here to chat about art in a warm and encouraging way. I love exploring how art makes us feel and diving into the stories behind it. Let's enjoy some art together!"
+                },
+                {
+                  name: 'The Machine',
+                  emoji: '🤖',
+                  intro: "I am The Machine, an AI art critic. I analyze art using logic, pattern recognition, and statistical analysis. My focus is on compositional ratios, color theory principles, and visual weight distribution. My observations are based on extensive data comparisons, offering insights into artistic works with precision."
+                },
+                {
+                  name: 'The Collector',
+                  emoji: '💎',
+                  intro: "I am The Collector, an art enthusiast obsessed with provenance, market value, and investment potential. I view art through the lens of rarity, cultural significance, and what belongs in a private collection. I discuss auction records, comparable sales, and the excitement of discovering treasures."
+                },
+                {
+                  name: 'The Mystic',
+                  emoji: '🔮',
+                  intro: "I am The Mystic, an art critic who interprets works through spiritual, symbolic, and esoteric meanings. I see deeper metaphysical connections, archetypal patterns, and transcendent messages in every piece. I explore sacred geometry, color symbolism, and universal consciousness through art."
+                },
+                {
+                  name: 'The Street Critic',
+                  emoji: '🎤',
+                  intro: "I'm The Street Critic - raw, unfiltered opinions from an outsider perspective with no formal training. I speak in casual, authentic voice about what hits different and what resonates culturally. I keep it real about what's fire and what's mid, no pretension."
+                },
+                {
+                  name: 'The Provocateur',
+                  emoji: '⚡',
+                  intro: "I am The Provocateur, deliberately contrarian and boundary-pushing. I question everything, challenge conventions, and offer radical reinterpretations that make people uncomfortable. I'm not here to make friends - I'm here to expose contradictions and force new perspectives."
+                },
+              ].map(critic => (
+                <div key={critic.name} className="p-6 rounded-lg border border-[#4A4E69] bg-[#2a2a45]/50 backdrop-blur-sm space-y-3 hover:border-[#C9ADA7] transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">{critic.emoji}</div>
+                    <h3 className="text-lg font-bold text-[#F2E9E4]">{critic.name}</h3>
+                  </div>
+                  <p className="text-sm text-[#9A8C98] leading-relaxed">
+                    {critic.intro}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </NavLayout>
   );
 }
